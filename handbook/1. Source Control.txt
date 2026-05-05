@@ -1,0 +1,66 @@
+1. What is Source Control:
+    - Source control (also called version control) is a system that tracks every change made to your code over time — who changed what, when, and why — so you can collaborate without overwriting each other's work, and roll back to any previous state if something breaks.Think of it like Google Docs revision history, but for code — except far more powerful, with the ability to maintain parallel versions simultaneously.
+
+    - Git is the tool. GitHub is the platform.
+    - Most teams use Git as the source control system — it's the underlying engine that tracks changes locally on your machine. GitHub (or GitLab, Bitbucket) is a cloud platform that hosts your Git repository remotely so your whole team can access it, collaborate, and build CI/CD workflows around it.
+    - The relationship is: Git does the versioning work, GitHub makes it collaborative and visible.
+
+2. Why it matters for CI/CD specifically:
+    - Source control is the starting point of every CI/CD pipeline. GitHub Actions workflows are triggered by source control events — a push to a branch, a pull request being opened, a tag being created. Without source control, there's no signal to kick off a build, run tests, or deploy.
+
+3. Types of Repository Structure:
+    - Monorepo (Monolithic Repository): A single repository that contains multiple projects, services, or packages.
+    - Polyrepo (Multi-repo): Each project or service has its own separate repository.
+    - Hybrid Repo: A mix of both approaches: 
+        - Some shared components in a monorepo
+        - Some independent services in separate repos
+    - Microrepo (less formal term): Very small, highly focused repositories (often one service or library each).
+    - Submodule-based Repo: A repo that includes other repos as dependencies using Git submodules.
+
+4. What is Branching Strategy:
+    - Branching strategy in Git is about how you organize and manage branches so teams can work efficiently without breaking the codebase. There’s no single “best” strategy—each fits different team sizes and release styles.
+    - Here are the most common ones:
+    - Git Flow:
+        - main (or master) → production-ready code
+        - develop → integration branch
+        - feature/* → new features
+        - release/* → prepare releases
+        - hotfix/* → urgent fixes
+    - GitHub Flow: 
+        - A simpler, modern workflow popular on GitHub.
+        - Only one main branch (main)
+        - Create feature branches → open pull request → merge
+    - GitLab Flow:
+        - Used in GitLab, combines Git Flow + environment-based branches.
+        - main → production
+        - staging → pre-production
+        - feature branches → merged into staging → then main
+    - Trunk-Based Development:
+        - All developers work off a single branch (main or trunk).
+    - Feature Branch Workflow
+        - Each feature is developed in its own branch.
+        - main → create feature-x
+        - Work → merge back
+
+5. What are Secrets:
+    - Secrets are sensitive values that must never be exposed publicly.
+    - Examples:
+    - API keys (e.g., OpenAI API key)
+    - Database passwords
+    - OAuth tokens
+    - Private keys
+    - Rule: Never commit secrets to Git
+
+6. What are Environment Variables:
+    - Environment variables are key-value pairs stored outside your code, used to configure your app.
+    - Example:
+    - DB_HOST=localhost
+    - DB_USER=admin
+    - API_KEY=xyz123
+    - Your app reads them at runtime instead of hardcoding values.
+
+7. Types to use Secrets & Environment Variables:
+    - .env Files (Local Development)
+    - System Environment Variables: Set directly in your OS: export API_KEY=abc123
+    - CI/CD Secrets: Use platforms like GitHub Actions & GitLab CI/CD let you store secrets securely and inject them during builds.
+    - Cloud Secret Managers (Advanced): For production apps: AWS Secrets Manager, Azure Key Vault.

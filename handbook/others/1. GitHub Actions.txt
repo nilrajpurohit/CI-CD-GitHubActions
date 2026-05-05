@@ -1,0 +1,41 @@
+1. What is GitHub Actions:
+    - GitHub Actions is a built-in automation and CI/CD tool provided by GitHub that lets you automate tasks directly inside your repository.
+    - It helps you automatically run below things whenever something happens in your repo (like a push or pull request).
+    - Tests
+    - Builds
+    - Deployments
+    
+2. Why use GitHub Actions:
+    - Built into GitHub (no setup needed)
+    - Automates repetitive tasks
+    - Improves code quality with testing
+    - Enables fast deployments
+
+3. GitHub Actions Key Concepts:
+    - Workflow: A workflow is a YAML file that defines what to do.
+        - Location: .github/workflows/main.yml
+    - Events (Triggers): Workflows run when events happen:
+        - push -> code pushed
+        - pull_request -> PR opened/updated
+        - schedule -> cron jobs
+        - workflow_dispatch -> manual trigger
+    - Jobs: A workflow contains jobs (units of work).
+        - Run in parallel or sequence
+        - Each job runs on a virtual machine
+    - Steps: Each job has steps:
+        - Run commands
+        - Use reusable actions
+    - Actions: Reusable components like plugins
+        - Checkout code
+        - Setup Nodejs
+        - Deploy to server
+
+4. How GitHub Actions automate these workflows:
+    - You define the workflow (YAML file)
+    - An event triggers it: GitHub constantly listens for events in your repo.
+    - GitHub spins up a runner (virtual machine): GitHub automatically creates a fresh environment called a runner.
+    - Jobs start running: Your workflow is divided into jobs.
+    - Steps execute one by one: Each job has steps, executed in order.
+    - Actions do the heavy lifting: Actions are pre-built automation blocks.
+    - Secrets are injected securely: If your workflow needs sensitive data.
+    - Output + results: After execution Logs are generated, Status is shown (like success/failure), Can trigger next actions (like deployment)
