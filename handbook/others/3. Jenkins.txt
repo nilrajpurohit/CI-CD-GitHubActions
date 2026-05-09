@@ -1,0 +1,64 @@
+1. What is Jenkins:
+    - Jenkins is an open-source automation server used to automate software development processes such as:
+        - Building code
+        - Running tests
+        - Deploying applications
+        - Automating CI/CD pipelines
+    - It is one of the most widely used tools in DevOps for implementing Continuous Integration and Continuous Deployment (CI/CD).
+
+2. Why Jenkins is Used:
+    - Without Jenkins:
+        - Developers manually build applications
+        - Testing takes time
+        - Deployments are error-prone
+    - With Jenkins:
+        - Everything becomes automated
+        - Faster delivery
+        - Reduced human errors
+        - Continuous feedback
+
+3. How Jenkins Works:
+    Developer pushes code to Git
+            ↓
+    Jenkins detects code change
+            ↓
+    Build application
+            ↓
+    Run automated tests
+            ↓
+    Create artifact/Docker image
+            ↓
+    Deploy to server/Kubernetes
+
+4. Key Features of Jenkins
+    1. Automation: Automates repetitive tasks like build and deployment.
+    2. Plugin Support: Supports 1000+ plugins for integrations.
+    - Examples:
+        - Git
+        - Docker
+        - Kubernetes
+        - Maven
+        - Slack
+    3. Pipeline as Code: Pipelines can be written using a Jenkinsfile.
+    4. Distributed Builds: Supports master-agent architecture.
+    5. Integration: Integrates with many DevOps tools.
+
+5. Jenkins Architecture: 
+- Jenkins Master (Controller)
+- Responsible for:
+    - Scheduling jobs
+    - Managing pipelines
+    - Monitoring agents
+- Jenkins Agent (Slave/Worker)
+- Executes jobs assigned by master.
+          Jenkins Master
+             /   \
+            /     \
+       Agent1   Agent2
+
+6. Types of Jenkins Jobs:
+    - Job Type	            Purpose
+    - Freestyle             Project	Simple build jobs
+    - Pipeline	            CI/CD workflows
+    - Multibranch Pipeline	Different branches automatically
+    - Folder	            Organize jobs

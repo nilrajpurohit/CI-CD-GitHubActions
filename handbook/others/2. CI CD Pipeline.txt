@@ -1,0 +1,63 @@
+1. What is CI CD Pipeline:
+    - A CI/CD pipeline is an automated workflow used in software development to build, test, and deploy applications quickly and reliably.
+    - CI = Continuous Integration
+    - CD = Continuous Delivery / Continuous Deployment
+    - The pipeline automates the steps from code commit to deployment.
+    - Simple Flow of CI/CD Pipeline
+    Developer writes code
+            ↓
+    Code pushed to Git repository
+            ↓
+    CI tool triggers pipeline
+            ↓
+    Build application
+            ↓
+    Run automated tests
+            ↓
+    Security/quality checks
+            ↓
+    Create artifact or Docker image
+            ↓
+    Deploy to staging/testing
+            ↓
+    Approval (optional)
+            ↓
+    Deploy to production
+
+2. CI (Continuous Integration):
+    - Continuous Integration means developers frequently merge code into a shared repository.
+    - Whenever code is pushed:
+        - Build starts automatically
+        - Tests run automatically
+        - Errors are detected early
+    - Goal:
+    - Detect bugs quickly and avoid integration issues.
+    - Common CI Tools:
+        - Jenkins
+        - GitHub Actions
+        - GitLab CI/CD
+        - Azure DevOps
+
+3. CD (Continuous Delivery / Deployment):
+    - Continuous Delivery: Code is automatically prepared for release, but production deployment requires manual approval.
+    - Continuous Deployment: Code is automatically deployed to production without manual intervention.
+
+4. Typical CI/CD Pipeline Stages:
+    - Stage	    Purpose
+    - Source	Fetch code from Git
+    - Build	    Compile/package application
+    - Test	    Execute automated tests
+    - Scan	    Security and quality checks
+    - Package	Create artifacts/images
+    - Deploy	Release application
+    - Monitor	Observe health/performance
+
+5. Common Tools Used in CI/CD:
+    - Category	        Tools
+    - Version Control	Git, GitHub, GitLab
+    - CI/CD	            Jenkins, GitLab CI, GitHub Actions
+    - Containerization	Docker
+    - Orchestration	    Kubernetes
+    - IaC	            Terraform
+    - Monitoring	    Prometheus, Grafana
+    - Artifact Repo	    Nexus, Artifactory
