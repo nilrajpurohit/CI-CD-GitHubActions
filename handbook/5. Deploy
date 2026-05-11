@@ -1,0 +1,140 @@
+1. Rolling Deployments
+    - How it works:
+        Replace old instances with new instances one by one.
+        Traffic is automatically routed to healthy instances.
+        Old version is still partially running until new version is fully deployed.
+    - Node.js Example:
+        Suppose you run a Node.js API on 3 servers.
+        Server 1 updates first → traffic is routed to Server 2 and 3.
+        Server 2 updates next → traffic continues to the updated servers.
+        Finally, Server 3 updates → now all servers run the new version.
+    - Pros: No downtime.
+    - Cons: Hard to rollback quickly if something goes wrong.
+
+2. Blue/Green Deployments
+    - Goal: Switch users instantly between two environments.
+    - How it works:
+        Blue environment: current production version.
+        Green environment: new version being prepared.
+        Switch traffic from blue → green once ready.
+    - Node.js Example:
+        Deploy Node.js app version 1.0 to blue servers.
+        Deploy Node.js app version 1.1 to green servers.
+        Run smoke tests on green.
+        Change load balancer to route all users to green.
+        Blue version can stay as backup.
+    - Pros: Instant rollback, zero downtime.
+    - Cons: Requires double infrastructure.
+
+3. Canary Deployments
+    - Goal: Test new version on a small percentage of users first.
+    - How it works:
+        Deploy new version to 5–10% of servers/users.
+        Monitor logs and metrics.
+        Gradually increase traffic to new version if no issues.
+    - Node.js Example:
+        Version 2.0 of Node.js API is deployed to one server in a 10-server cluster.
+        Only 10% of user requests hit the new server.
+        If everything is fine → expand to 50%, then 100%.
+    - Pros: Limits risk of new bugs affecting all users.
+    - Cons: Slightly more complex traffic routing.
+
+4. Feature Flags Integration
+    - Goal: Ship code with hidden features and enable them selectively.
+    - How it works:
+        Code contains all features but flags control what is active.
+        Flags can be toggled at runtime without redeploying.
+    - Node.js Example:
+        const featureFlags = {
+            newPaymentFlow: false
+        };
+        app.post("/pay", (req, res) => {
+            if (featureFlags.newPaymentFlow) {
+                return res.send("New payment flow active");
+            } else {
+                return res.send("Old payment flow");
+            }
+        });
+        Deploy app with newPaymentFlow: false.
+        Enable flag for 5% of users → test behavior.
+        Turn on for everyone after confirmation.
+    - Pros: Safe experimentation and A/B testing.
+    - Cons: Code complexity can increase.
+
+5. Infrastructure as Code (IaC) Integration:
+    - Infrastructure as Code (IaC) means you define and manage your infrastructure—servers, databases, networks, cloud resources—using code instead of manual setup. This makes deployments repeatable, version-controlled, and automatable.
+    - Integrating IaC into CI/CD ensures your application and its infrastructure are deployed together in a fully automated, consistent manner.
+
+6. Provision and Deploy Environments:
+    - Definition: Create and configure infrastructure automatically using IaC tools rather than manually clicking in the cloud console.
+    - Popular IaC Tools:
+        Terraform – cloud-agnostic, declarative infrastructure definitions
+        Ansible – configuration management and provisioning
+        Pulumi – use programming languages (JS, TS, Python) to define infrastructure
+    - Example with Terraform (Node.js app deployed to AWS EC2):
+        # main.tf
+        provider "aws" {
+            region = "us-east-1"
+        }
+        resource "aws_instance" "node_app" {
+            ami           = "ami-0c55b159cbfafe1f0"
+            instance_type = "t2.micro"
+            tags = {
+                Name = "NodeAppServer"
+            }
+            provisioner "remote-exec" {
+                inline = [
+                "sudo apt-get update -y",
+                "sudo apt-get install -y nodejs npm",
+                "git clone https://github.com/username/node-app.git /home/ubuntu/node-app",
+                "cd /home/ubuntu/node-app && npm install && npm start"
+                ]
+            }
+        }
+    - Explanation:
+        - This Terraform script creates an EC2 instance and deploys your Node.js app automatically.
+        - No manual provisioning needed.
+
+7. Integrate IaC in Pipelines:
+    - Definition: Embed IaC execution into your CI/CD pipeline so that deploying infrastructure and code happens automatically together.
+    - Example: GitHub Actions pipeline with Terraform for Node.js app:
+        name: Node.js CI/CD with Terraform
+        on: [push]
+        jobs:
+            build-and-test:
+                runs-on: ubuntu-latest
+                steps:
+                    - uses: actions/checkout@v3
+                    - uses: actions/setup-node@v3
+                        with:
+                        node-version: 18
+                    - run: npm install
+                    - run: npm test
+            deploy-infra:
+                runs-on: ubuntu-latest
+                needs: build-and-test
+                steps:
+                    - uses: actions/checkout@v3
+                    - name: Setup Terraform
+                        uses: hashicorp/setup-terraform@v2
+                        with:
+                            terraform_version: 1.6.0
+                    - name: Terraform Init
+                        run: terraform init
+                    - name: Terraform Apply
+                        run: terraform apply -auto-approve
+                        env:
+                            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - Explanation:
+        - build-and-test job runs Node.js tests first.
+        - deploy-infra job runs Terraform to provision infrastructure.
+        - Secrets for AWS credentials are stored securely in GitHub Secrets.
+        - If tests fail, the pipeline stops and does not deploy, ensuring safety.
+
+8. Key Benefits of IaC Integration in CI/CD
+    Benefit	        Explanation
+    Consistency	    Every environment (dev, staging, prod) is deployed the same way.
+    Version Control	Infrastructure changes are tracked in Git repositories.
+    Automation	    No manual provisioning—pipeline provisions and deploys automatically.
+    Safety	        Combined with tests and policies, prevents deploying broken or misconfigured infrastructure.

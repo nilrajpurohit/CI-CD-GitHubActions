@@ -1,0 +1,113 @@
+1. Pipeline Architecture:
+    - A pipeline is the automated workflow that defines the steps code goes through—from commit to production. Pipeline architecture involves how you design, organize, and manage these workflows.
+
+2. Monorepo vs Multi-repo Pipelines:
+    - Monorepo: All projects/services live in one repository.
+        - Pros: Easier to manage shared dependencies and libraries.
+                One CI/CD pipeline can orchestrate builds for multiple services.
+        - Cons: Pipelines can get complex as number of services grows.
+                Build times may be longer if not optimized.
+        - Example: Google, Facebook use monorepos internally.
+    - Multi-repo: Each project/service has its own repository.
+        - Pros: Pipelines are simpler per service.
+                Teams can work independently.
+        - Cons: Harder to manage cross-service dependencies.
+                Requires orchestrating multiple pipelines if a change impacts many services.
+        - Example: Many small startups prefer multi-repo for microservices.
+    - Handling multiple projects/services efficiently:
+        - Trigger pipelines selectively:
+            Only build/test/deploy the services that actually changed.
+            Use path filters or conditional jobs in your pipeline.
+            Example: If service-A/ changed, run tests and deploy only for Service A, not the entire repo.
+
+3. Pipeline as Code:
+    - Modern CI/CD uses Pipeline as Code, meaning the pipeline itself is defined and versioned in code—just like your application code.
+    - Benefits:
+        Reusable, modular, and maintainable.
+        Version-controlled, so changes to the pipeline are auditable.
+        Easy to share templates across teams.
+    - Examples:
+        - Jenkinsfile (for Jenkins):
+        pipeline {
+            agent any
+            stages {
+                stage('Install Dependencies') {
+                    steps {
+                        echo 'Installing Node.js dependencies...'
+                        sh 'npm install'
+                    }
+                }
+
+                stage('Run Tests') {
+                    steps {
+                        echo 'Running tests...'
+                        sh 'npm test'
+                    }
+                }
+
+                stage('Build') {
+                    steps {
+                        echo 'Building the app...'
+                        sh 'npm run build'
+                    }
+                }
+
+                stage('Deploy') {
+                    steps {
+                        echo 'Deploying the app...'
+                        sh './deploy.sh'
+                    }
+                }
+            }
+            post {
+                always {
+                    echo 'Pipeline finished.'
+                }
+                success {
+                    echo 'Pipeline succeeded!'
+                }
+                failure {
+                    echo 'Pipeline failed!'
+                }
+            }
+        }
+        - GitHub Actions YAML:
+        name: CI Pipeline
+        on:
+            push:
+                paths:
+                    - 'service-A/**'
+                    - 'shared-lib/**'
+        jobs:
+            build:
+                runs-on: ubuntu-latest
+            steps:
+                - name: Checkout repository
+                    uses: actions/checkout@v3
+                - name: Setup Node.js
+                    uses: actions/setup-node@v3
+                    with:
+                        node-version: '18' # Change to your Node version
+                - name: Install Dependencies
+                    run: npm install
+                - name: Run Tests
+                    run: npm test
+                - name: Build Application
+                    run: npm run build
+                - name: Deploy
+                    run: ./deploy.sh
+
+4. Conditional Steps:
+    - Conditional steps allow pipelines to run only when necessary.
+    - Purpose: Save resources, speed up CI/CD, avoid deploying unchanged services.
+    - Techniques:
+        Path filters (trigger jobs only if certain directories/files change)
+            GitHub Actions example:
+                on:
+                    push:
+                        paths:
+                            - 'service-A/**'
+                            - 'service-B/**'
+        Environment checks (deploy to staging only, production later)
+        Manual approvals (require human intervention for critical environments)
+        Dynamic pipelines (Jenkins, GitLab CI can decide at runtime which stages to run)

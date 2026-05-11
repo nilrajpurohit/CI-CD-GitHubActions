@@ -1,0 +1,78 @@
+1. Observability & Reliability in CI/CD Pipelines
+    - Observability and reliability ensure your pipeline is transparent, predictable, and resilient. In other words, you want to know what’s happening, detect issues early, and recover automatically from failures.
+
+2. Pipeline Monitoring
+    - Definition: Keeping an eye on your CI/CD pipeline to detect failures, slow builds, or other anomalies.
+    - Implementation: Trigger notifications when something goes wrong.
+    - Tools: Slack, Email, Teams, PagerDuty, or custom dashboards.
+    - Example in a Node.js pipeline using GitHub Actions:
+        name: Node.js CI
+        on: [push, pull_request]
+        jobs:
+            build-and-test:
+                runs-on: ubuntu-latest
+                steps:
+                    - uses: actions/checkout@v3
+                    - name: Setup Node.js
+                        uses: actions/setup-node@v3
+                        with:
+                        node-version: 18
+                    - run: npm install
+                    - run: npm test
+                # Send notifications on failure
+                # Slack webhook example
+                notifications:
+                slack:
+                    webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+                    on_failure: true
+    - Explanation:
+        - If a build or test fails, a Slack message is sent to your team immediately. This improves observability, so you know the health of your pipeline in real time.
+
+3. Retry Strategies for Flaky Builds
+    - Definition: Some builds fail intermittently due to external dependencies, network issues, or timing problems. Instead of failing immediately, retry the job a few times.
+    - Implementation: Configure the CI/CD tool to retry failed jobs automatically.
+    - Example in GitHub Actions:
+        jobs:
+            build:
+                runs-on: ubuntu-latest
+                strategy:
+                    fail-fast: false
+                    matrix:
+                        attempt: [1, 2, 3] # retry 3 times
+                steps:
+                    - uses: actions/checkout@v3
+                    - name: Setup Node.js
+                        uses: actions/setup-node@v3
+                        with:
+                            node-version: 18
+                    - run: npm install
+                    - run: npm test
+    - Explanation: 
+        - If the test fails due to a temporary network issue or flaky test, the pipeline will retry up to 3 times before finally reporting failure. This increases pipeline reliability.
+
+4. Metrics: Build Duration, Failure Rates, Test Coverage Trends:
+    - Definition: Collect and analyze metrics to track pipeline performance over time.
+        - Build Duration: How long does it take to build and test your app?
+        - Failure Rates: How often does the pipeline fail?
+        - Test Coverage Trends: How is your code coverage changing over time?
+    - Tools: GitHub Actions + Codecov, Jenkins, CircleCI Insights, Grafana dashboards.
+    - Node.js Example (with Codecov for coverage metrics):
+        jobs:
+            test-and-report:
+                runs-on: ubuntu-latest
+                steps:
+                - uses: actions/checkout@v3
+                - uses: actions/setup-node@v3
+                    with:
+                        node-version: 18
+                - run: npm install
+                - run: npm test -- --coverage
+                - name: Upload coverage to Codecov
+                    uses: codecov/codecov-action@v3
+                    with:
+                        token: ${{ secrets.CODECOV_TOKEN }}
+    - Explanation:
+        - npm test -- --coverage generates coverage metrics for your Node.js app.
+        - Codecov action uploads it to Codecov dashboards, allowing you to visualize trends over time.
+    - You can also track average build time and failure rate in GitHub Actions Insights or other CI dashboards to monitor pipeline health.
+

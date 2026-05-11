@@ -1,0 +1,76 @@
+1. Security & Compliance in Pipelines
+    - Security and compliance in CI/CD pipelines ensure your code, dependencies, and deployment processes are safe, auditable, and enforce company policies. This reduces risk of breaches, vulnerabilities, or accidental deployment of bad code.
+
+2. Secrets Management
+    - Definition: Protect sensitive information like API keys, database passwords, or tokens used in your pipeline. Never hardcode these in your repo.
+    - Tools:
+        GitHub Secrets – encrypted secrets in GitHub repos
+        HashiCorp Vault – centralized secret management
+        AWS Secrets Manager – cloud-based secrets storage
+    - Node.js example in GitHub Actions:
+        name: Node.js CI with Secrets
+        on: [push]
+        jobs:
+            build:
+                runs-on: ubuntu-latest
+                steps:
+                - uses: actions/checkout@v3
+                - name: Setup Node.js
+                    uses: actions/setup-node@v3
+                        with:
+                        node-version: 18
+                - run: npm install
+                - name: Run app with secret
+                    env:
+                        DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+                    run: |
+                        echo "Connecting to DB with secret..."
+                        node scripts/connect-db.js
+    - Explanation:
+        - The secret DB_PASSWORD is stored securely in GitHub and accessed only at runtime, never exposed in the codebase.
+        - This keeps sensitive information safe from leaks or accidental commits.
+
+3. Dependency Scanning:
+    - Definition: Node.js projects use many packages. Some may have known vulnerabilities. CI/CD should automatically scan dependencies and warn or block builds.
+    - Tools:
+        npm audit – built-in Node.js dependency scanning
+        Snyk – detects vulnerabilities and suggests fixes
+        OWASP Dependency-Check – security scanning for many languages
+    - Node.js example with GitHub Actions + npm audit:
+        jobs:
+            security-check:
+                runs-on: ubuntu-latest
+                steps:
+                - uses: actions/checkout@v3
+                - uses: actions/setup-node@v3
+                    with:
+                    node-version: 18
+                - run: npm install
+                - name: Run npm audit
+                    run: npm audit --audit-level=high
+    - Explanation:
+        - npm audit checks all dependencies for high-severity vulnerabilities.
+        - You can fail the pipeline if any critical issues exist, preventing unsafe code from being merged.
+    - Snyk example (optional for more advanced scanning):
+        - name: Run Snyk scan
+            uses: snyk/actions/node@master
+            with:
+                args: test
+            env:
+                SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+4. Pipeline Policies:
+    - Definition: Enforce rules in your CI/CD pipeline to prevent risky code from being deployed.
+    - Examples of policies:
+        Block merge if tests fail
+        Block merge if vulnerabilities are detected
+        Require code reviews or approval by security team
+    - GitHub example: Branch protection rules
+        Go to your GitHub repo → Settings → Branches → Branch protection rules
+        Enable:
+            Require status checks (like build, test, security-scan) to pass before merging
+            Require pull request reviews
+            Enforce linear history
+    - Explanation:
+        - If npm test or npm audit fails, the pipeline status is red, and GitHub will block merging into main until fixed.
+        - This ensures only secure, tested code gets deployed.

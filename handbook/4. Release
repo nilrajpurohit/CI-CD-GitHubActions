@@ -1,0 +1,51 @@
+1. What Are Artifacts:
+    - Artifacts are the output of your build process—the packaged, deployable version of your application.
+    - For a Node.js app, artifacts could be:
+        Docker images: a container image containing Node.js, your app code, and dependencies.
+        NPM packages: .tgz files if you’re publishing your Node.js library.
+        Binaries: precompiled executables (less common for Node.js).
+        Other files: JARs, WARs, zip/tar archives in other languages.
+    - Artifacts are crucial because they provide a stable, reproducible build that can be deployed across environments (staging, production).
+
+2. Tagging Artifacts:
+    - Tagging is how you identify a specific version of your artifact. Common strategies:
+    a. Git Commit Hashes
+        - Tag the artifact with the short commit SHA.
+        - Example: my-node-app:abc1234
+        - Pros:
+            Direct traceability to code.
+            Every artifact is unique.
+        - Cons:
+            Harder for humans to remember.
+    b. Semantic Versioning (SemVer)
+        - Format: MAJOR.MINOR.PATCH → 1.2.3
+        - Example: my-node-app:1.2.3
+        - Rules:
+            MAJOR → breaking changes
+            MINOR → new features, backward compatible
+            PATCH → bug fixes
+        - Pros:
+            Easy for humans to understand.
+            Works well for release management.
+    c. Combined Approach
+        - Some teams combine both: my-node-app:1.2.3-abc1234
+        - You see both semantic version and exact commit.
+
+3. Storing Artifacts:
+    - Artifacts need a central repository so they can be reused across environments. Common options:
+    Tool	            Artifact Type	                Notes
+    Docker Registry	    Docker images	                Most Node.js apps today use Docker for deployment.
+    Nexus Repository	Docker, npm, Maven, binaries	Supports multiple formats.
+    Artifactory	        Docker, npm, binaries	        Enterprise-grade artifact repository.
+    GitHub Packages	    npm packages, Docker images	    Integrated with GitHub CI/CD.
+    - Workflow Example for a Node.js App using Docker:
+        - CI pipeline builds the Docker image:
+            docker build -t my-node-app:1.2.3 .
+        - Tag with commit SHA:
+            docker tag my-node-app:1.2.3 my-node-app:abc1234
+        - Push to artifact repository:
+            docker push my-docker-registry/my-node-app:1.2.3
+            docker push my-docker-registry/my-node-app:abc1234
+        - CD pipeline pulls the exact artifact version for deployment:
+            docker pull my-docker-registry/my-node-app:1.2.3
+
